@@ -1,2 +1,2 @@
-# va-zilina
+# ESN Guide
 web app project - UNIZA
