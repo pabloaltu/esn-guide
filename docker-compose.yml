@@ -1,39 +1,50 @@
 version: '3.8'
 
 services:
-  # Base de données
+  # 1. Base de données PostgreSQL
   db:
-    image: postgres:15-alpine # Ou mysql:8
-    container_name: esn_db
+    image: postgres:15-alpine
+    container_name: esn_guide_db
+    restart: always
     environment:
-      POSTGRES_USER: esn_user
-      POSTGRES_PASSWORD: esn_password_secret # À mettre dans un fichier .env plus tard
-      POSTGRES_DB: esn_guide
+      POSTGRES_USER: esn_student_user
+      POSTGRES_PASSWORD: slovakia_is_beautiful_2026
+      POSTGRES_DB: esn_guide_db
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
-      - ./database:/docker-entrypoint-initdb.d # Exécute init.sql automatiquement
+      - postgres_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
 
-  # Backend
+  # 2. API Backend Node.js / Express
   backend:
     build: ./backend
-    container_name: esn_backend
+    container_name: esn_guide_backend
+    restart: always
     ports:
       - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://esn_student_user:slovakia_is_beautiful_2026@db:5432/esn_guide_db
+      - PORT=8000
     volumes:
       - ./backend:/app
     depends_on:
       - db
 
-  # Frontend
+  # 3. Client Frontend React (Vite)
   frontend:
     build: ./frontend
-    container_name: esn_frontend
+    container_name: esn_guide_frontend
     ports:
       - "3000:3000"
     volumes:
       - ./frontend:/app
+      # Empêche Docker d'écraser les node_modules locaux s'ils sont différents
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
 
 volumes:
-  db_data:
+  postgres_data:
