@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Base de données
+  db:
+    image: postgres:15-alpine # Ou mysql:8
+    container_name: esn_db
+    environment:
+      POSTGRES_USER: esn_user
+      POSTGRES_PASSWORD: esn_password_secret # À mettre dans un fichier .env plus tard
+      POSTGRES_DB: esn_guide
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d # Exécute init.sql automatiquement
+
+  # Backend
+  backend:
+    build: ./backend
+    container_name: esn_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+
+  # Frontend
+  frontend:
+    build: ./frontend
+    container_name: esn_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+
+volumes:
+  db_data:

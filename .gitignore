@@ -1,0 +1,15 @@
+# Dossiers de dépendances (très lourds, se génèrent localement)
+node_modules/
+vendor/
+
+# Fichiers d'environnement (CONTIENNENT TES MOTS DE PASSE BD)
+.env
+.env.local
+
+# Fichiers système et IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Données de la base de données Docker (pour ne pas commit ta base locale)
+docker-data/
