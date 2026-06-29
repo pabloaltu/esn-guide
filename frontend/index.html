@@ -3,12 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="w=device-width, initial-scale=1.0" />
-    <title>ESN Guide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ESN Guide - Your Erasmus Companion</title>
     
+    <!-- Importation de la police d'écriture moderne (Plus Jakarta Sans) depuis Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CDN CSS pour Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   </head>
-  <body>
+  <body class="bg-gray-50 antialiased selection:bg-cyan-500 selection:text-white">
+    <!-- C'est ici que React va venir injecter toute ton application -->
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
