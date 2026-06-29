@@ -8,7 +8,6 @@ module.exports = (req, res, next) => {
             return res.status(401).json({ error: "Token manquant" });
         }
 
-        // Format attendu: "Bearer TOKEN"
         const token = authHeader.split(" ")[1];
 
         if (!token) {
@@ -16,10 +15,9 @@ module.exports = (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
 
-        req.user = decoded; // on stocke user dans req
-
-        next(); // autorise accès à la route
+        next();
 
     } catch (err) {
         return res.status(401).json({ error: "Non autorisé" });

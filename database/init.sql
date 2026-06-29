@@ -1,20 +1,30 @@
 -- ============================================================
--- 1. Table USERS
+-- 1. Table USERS (Nettoyée et sécurisée)
 -- ============================================================
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    isic_number VARCHAR(50) UNIQUE,
-    isic_expiry_date DATE,
+    password_hash VARCHAR(255) NOT NULL, -- Changé pour correspondre à bcrypt cpoté contrôleur
     role VARCHAR(50) DEFAULT 'erasmus_active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================
--- 2. Table PLACES (Version finale corrigée avec views_count ! 🔥)
+-- 2. Table PROFILES (Ajoutée pour gérer la configuration de profil)
 -- ============================================================
-CREATE TABLE places (
+CREATE TABLE IF NOT EXISTS profiles (
+    id SERIAL PRIMARY KEY,
+    user_id INT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    username VARCHAR(100) NOT NULL,
+    avatar_url TEXT DEFAULT 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+    has_isic_card BOOLEAN DEFAULT FALSE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================
+-- 3. Table PLACES (Inchangée, ta table d'origine qui marche très bien)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS places (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     latitude DECIMAL(10, 8) NOT NULL,
@@ -23,27 +33,27 @@ CREATE TABLE places (
     district VARCHAR(100) NOT NULL, -- Stocke le nom de la région (ex: 'Bratislava', 'Zilina')
     views_count INT DEFAULT 0,       -- Utilisé pour le tri des plus populaires
     external_link TEXT,              -- Liens vers Booking, AllTrails, TripAdvisor
-    image_url TEXT,                  -- URL de l'image (sera ajoutée plus tard)
+    image_url TEXT,                  -- URL de l'image (Sera alimentée dynamiquement par le Front)
     has_isic_discount BOOLEAN DEFAULT FALSE
 );
 
 -- ============================================================
--- 3. Table REVIEWS
+-- 4. Table REVIEWS (Simplifiée pour correspondre au Front-end standard à 5 étoiles)
 -- ============================================================
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     place_id INT REFERENCES places(id) ON DELETE CASCADE,
-    budget_rating INT CHECK (budget_rating BETWEEN 1 AND 5),
-    quality_rating INT CHECK (quality_rating BETWEEN 1 AND 5),
+    rating INT CHECK (rating BETWEEN 1 AND 5), -- Fusion de budget/quality pour un système TripAdvisor propre
     comment TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, place_id) -- Sécurité : Un étudiant ne peut mettre qu'un seul avis par lieu !
 );
 
 -- ============================================================
--- 4. Table EXCURSIONS
+-- 5. Table EXCURSIONS (Laissée pour tes fonctionnalités futures)
 -- ============================================================
-CREATE TABLE excursions (
+CREATE TABLE IF NOT EXISTS excursions (
     id SERIAL PRIMARY KEY,
     host_id INT REFERENCES users(id) ON DELETE CASCADE,
     place_id INT REFERENCES places(id) ON DELETE CASCADE,

@@ -2,61 +2,35 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const { Pool } = require('pg');
 
 const app = express();
+
+// ===== LOGS DE SÉCURITÉ POUR VOIR SI DOCKER REBOOTE =====
+console.log("🔥 ATTENTION : Le nouveau index.js avec la route racine vient de démarrer !");
+
+// ===== ROUTE RACINE PLACÉE EN PREMIER ACCÈS =====
+app.get('/', (req, res) => {
+    return res.status(200).json({
+        status: "success",
+        message: "🚀 GG bruh! You did it !"
+    });
+});
 
 // ===== MIDDLEWARE =====
 app.use(cors());
 app.use(express.json());
 
-// ===== DATABASE =====
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
+// ===== IMPORTS DES ROUTES =====
+const placesRoutes = require('./routes/places.routes');
+const authRoutes = require('./routes/auth.routes');
+const usersRoutes = require('./routes/users.routes');
+const reviewsRoutes = require("./routes/reviews.routes");
 
-// Test connexion DB au démarrage
-pool.connect()
-    .then(() => console.log("✅ Connecté à PostgreSQL"))
-    .catch((err) => console.error("❌ Erreur DB :", err));
-
-// ===== ROUTES =====
-
-// GET /api/places
-app.get('/api/places', async (req, res) => {
-    try {
-        const { district } = req.query;
-
-        let queryText = `
-            SELECT *
-            FROM places
-        `;
-
-        const queryParams = [];
-
-        if (district) {
-            queryText += ` WHERE LOWER(district) = LOWER($1)`;
-            queryParams.push(district);
-        }
-
-        queryText += ` ORDER BY views_count DESC`;
-
-        const result = await pool.query(queryText, queryParams);
-
-        res.status(200).json(result.rows);
-
-    } catch (err) {
-        console.error("❌ Erreur /api/places :", err);
-        res.status(500).json({
-            error: "Erreur serveur"
-        });
-    }
-});
-
-// Route test
-app.get('/', (req, res) => {
-    res.send("🚀 Backend ESN Guide OK");
-});
+// ===== ENREGISTREMENT DES ROUTES =====
+app.use('/api/places', placesRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
+app.use("/api/reviews", reviewsRoutes);
 
 // ===== START SERVER =====
 const PORT = process.env.PORT || 8000;
