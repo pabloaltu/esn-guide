@@ -5,40 +5,29 @@ const jwt = require("jsonwebtoken");
 exports.register = async (req, res) => {
     try {
         const { email, password, username } = req.body;
+        const password_hash = await bcrypt.hash(password, 10);
 
-        if (!email || !password || !username) {
-            return res.status(400).json({ error: "Tous les champs sont obligatoires" });
-        }
+        // 1. On commence une transaction pour être sûr que tout se passe bien
+        await pool.query("BEGIN");
 
-        // 1. Vérifier si l'utilisateur existe déjà
-        const userExists = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
-        if (userExists.rows.length > 0) {
-            return res.status(400).json({ error: "Cet email est déjà utilisé" });
-        }
-
-        // 2. Chiffrer le mot de passe
-        const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash(password, salt);
-
-        // 3. Insérer l'utilisateur dans la table 'users'
-        const newUser = await pool.query(
-            "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
-            [email, passwordHash]
+        // 2. Insérer dans 'users'
+        const userResult = await pool.query(
+            "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id",
+            [email, password_hash]
         );
+        const userId = userResult.rows[0].id;
 
-        const userId = newUser.rows[0].id;
-
-        // 4. Créer automatiquement son profil associé dans la table 'profiles'
+        // 3. Insérer automatiquement dans 'profiles' avec le même ID
         await pool.query(
             "INSERT INTO profiles (user_id, username) VALUES ($1, $2)",
-            [userId, username]
+            [userId, username || email.split('@')[0]]
         );
 
-        res.status(201).json({ message: "Compte étudiant créé avec succès !" });
-
+        await pool.query("COMMIT"); // Valider tout
+        res.status(201).json({ message: "Compte créé avec succès !" });
     } catch (err) {
-        console.error("Erreur inscription:", err);
-        res.status(500).json({ error: "Erreur serveur lors de l'inscription" });
+        await pool.query("ROLLBACK"); // Annuler si erreur
+        res.status(500).json({ error: "Erreur lors de la création du compte" });
     }
 };
 
@@ -65,7 +54,7 @@ exports.login = async (req, res) => {
         }
 
         // 3. Récupérer les infos de son profil pour le Front-end
-        const profileResult = await pool.query("SELECT username, avatar_url, has_isic_card FROM profiles WHERE user_id = $1", [user.id]);
+        const profileResult = await pool.query("SELECT username, avatar_url, isic_number FROM profiles WHERE user_id = $1", [user.id]);
         const profile = profileResult.rows[0];
 
         // 4. Générer le Token de session JWT (expire dans 24 heures)

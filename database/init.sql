@@ -1,57 +1,59 @@
 -- ============================================================
--- 1. Table USERS (Nettoyée et sécurisée)
+-- 1. Table USERS 
 -- ============================================================
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL, -- Changé pour correspondre à bcrypt cpoté contrôleur
+    password_hash VARCHAR(255) NOT NULL, 
     role VARCHAR(50) DEFAULT 'erasmus_active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================
--- 2. Table PROFILES (Ajoutée pour gérer la configuration de profil)
+-- 2. Table PROFILES (Mise à jour avec tes nouveaux champs !)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS profiles (
     id SERIAL PRIMARY KEY,
     user_id INT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     username VARCHAR(100) NOT NULL,
     avatar_url TEXT DEFAULT 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
-    has_isic_card BOOLEAN DEFAULT FALSE,
+    age INT,
+    gender VARCHAR(20),
+    school VARCHAR(255),
+    isic_number VARCHAR(14),
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 -- ============================================================
--- 3. Table PLACES (Inchangée, ta table d'origine qui marche très bien)
+-- 3. Table PLACES 
 -- ============================================================
 CREATE TABLE IF NOT EXISTS places (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     latitude DECIMAL(10, 8) NOT NULL,
     longitude DECIMAL(11, 8) NOT NULL,
-    category VARCHAR(100) NOT NULL, -- 'Restaurant', 'Monument', 'Hiking', 'Accommodation'
-    district VARCHAR(100) NOT NULL, -- Stocke le nom de la région (ex: 'Bratislava', 'Zilina')
-    views_count INT DEFAULT 0,       -- Utilisé pour le tri des plus populaires
-    external_link TEXT,              -- Liens vers Booking, AllTrails, TripAdvisor
-    image_url TEXT,                  -- URL de l'image (Sera alimentée dynamiquement par le Front)
+    category VARCHAR(100) NOT NULL, 
+    district VARCHAR(100) NOT NULL,
+    views_count INT DEFAULT 0,
+    external_link TEXT,
+    image_url TEXT, 
     has_isic_discount BOOLEAN DEFAULT FALSE
 );
 
 -- ============================================================
--- 4. Table REVIEWS (Simplifiée pour correspondre au Front-end standard à 5 étoiles)
+-- 4. Table REVIEWS 
 -- ============================================================
 CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     place_id INT REFERENCES places(id) ON DELETE CASCADE,
-    rating INT CHECK (rating BETWEEN 1 AND 5), -- Fusion de budget/quality pour un système TripAdvisor propre
+    rating INT CHECK (rating BETWEEN 1 AND 5), 
     comment TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, place_id) -- Sécurité : Un étudiant ne peut mettre qu'un seul avis par lieu !
+    UNIQUE(user_id, place_id)
 );
 
 -- ============================================================
--- 5. Table EXCURSIONS (Laissée pour tes fonctionnalités futures)
+-- 5. Table EXCURSIONS 
 -- ============================================================
 CREATE TABLE IF NOT EXISTS excursions (
     id SERIAL PRIMARY KEY,
@@ -65,7 +67,7 @@ CREATE TABLE IF NOT EXISTS excursions (
 );
 
 -- ============================================================
--- 5. INJECTION DE TOUTES TES DONNÉES RÉELLES (Seeding)
+-- 5. INJECTION DES DONNÉES 
 -- ============================================================
 INSERT INTO places (name, latitude, longitude, category, district, views_count, external_link, has_isic_discount) VALUES
 -- --- BRATISLAVSKÝ KRAJ (Région de Bratislava) ---
