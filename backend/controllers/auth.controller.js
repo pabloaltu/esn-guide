@@ -72,7 +72,7 @@ exports.login = async (req, res) => {
                 email: user.email,
                 username: profile.username,
                 avatar_url: profile.avatar_url,
-                has_isic_card: profile.has_isic_card
+                isic_number: profile.isic_number
             }
         });
 

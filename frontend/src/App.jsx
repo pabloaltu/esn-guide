@@ -5,6 +5,7 @@ import { Menu, User, X, Maximize2, Minimize2, MapPin, Search, Eye, Map as MapIco
 import 'leaflet/dist/leaflet.css';
 
 const SLOVAKIA_CENTER = [48.6690, 19.6990];
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const createCustomIcon = (emoji) => L.divIcon({
   html: `<div class="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border-2 border-cyan-500 hover:border-pink-500 hover:scale-110 transition-transform duration-200 text-2xl">${emoji}</div>`,
@@ -15,8 +16,8 @@ const createCustomIcon = (emoji) => L.divIcon({
 const icons = { accommodation: createCustomIcon('🏨'), restaurant: createCustomIcon('🍴'), hiking: createCustomIcon('🥾'), monument: createCustomIcon('🏰'), default: createCustomIcon('📍') };
 
 const translations = {
-  en: { title: "Explore Slovakia", subtitle: "Find the best hotels, hikes, and student discounts curated by ESN.", searchPlaceholder: "Where are you going? (Bratislava, Kosice, Poprad...)", filterTitle: "Explore Regions", allRegions: "All Slovakia", popularTitle: "Recommended Places", views: "views", isicBadge: "✨ ISIC Discount Active", btnSeeOn: "Check Availability", mapShow: "Open Interactive Map", profile: "Profile", login: "Sign In", logout: "Sign Out", menuHelp: "Help & Student Guide", menuAbout: "About ESN Slovakia", detailsTitle: "View Details", close: "Close", mobileMapBtn: "View Map", noReviews: "No reviews yet", addReview: "Leave a review", loginRequired: "You must be signed in to leave a review.", authTitleLogin: "Sign In to ESN Guide", authTitleRegister: "Create Student Account", emailPlh: "your.email@domain.com", passwordPlh: "••••••••", usernamePlh: "ErasmusNick", btnAuthSubmitLogin: "Sign In", btnAuthSubmitRegister: "Create Account", switchRegister: "Don't have an account? Sign up", switchLogin: "Already have an account? Sign in", editProfile: "Edit Profile", saveProfile: "Save Changes" },
-  fr: { title: "Explore la Slovaquie", subtitle: "Trouve les meilleurs hôtels, randos et réductions choisis par l'ESN.", searchPlaceholder: "Où vas-tu ? (Bratislava, Kosice, Poprad...)", filterTitle: "Explorer les Régions", allRegions: "Toute la Slovaquie", popularTitle: "Coins recommandés", views: "vues", isicBadge: "✨ Réduction ISIC Active", btnSeeOn: "Vérifier la disponibilité", mapShow: "Ouvrir la Carte", profile: "Profil", login: "Connexion", logout: "Déconnexion", menuHelp: "Aide & Guide Étudiant", menuAbout: "À propos d'ESN Slovaquie", detailsTitle: "Voir les Détails", close: "Fermer", mobileMapBtn: "Carte", noReviews: "Aucun avis pour le moment", addReview: "Laisser un avis", loginRequired: "Vous devez être connecté pour laisser un avis.", authTitleLogin: "Connexion à ESN Guide", authTitleRegister: "Créer un compte Étudiant", emailPlh: "votre.email@domaine.com", passwordPlh: "••••••••", usernamePlh: "PseudoErasmus", btnAuthSubmitLogin: "Se connecter", btnAuthSubmitRegister: "Créer le compte", switchRegister: "Pas encore de compte ? S'inscrire", switchLogin: "Déjà un compte ? Se connecter", editProfile: "Modifier le Profil", saveProfile: "Enregistrer" }
+  en: { title: "Explore Slovakia", subtitle: "Find the best hotels, hikes, and student discounts curated by ESN.", searchPlaceholder: "Where are you going? (Bratislava, Kosice, Poprad...)", filterTitle: "Explore Regions", allRegions: "All Slovakia", popularTitle: "Recommended Places", views: "views", isicBadge: "✨ ISIC Discount Active", btnSeeOn: "Check Availability", mapShow: "Open Interactive Map", profile: "Profile", login: "Sign In", logout: "Sign Out", menuHelp: "Help & Student Guide", menuAbout: "About ESN Slovakia", menuExcursions: "Excursions", detailsTitle: "View Details", close: "Close", mobileMapBtn: "View Map", noReviews: "No reviews yet", addReview: "Leave a review", loginRequired: "You must be signed in to leave a review.", authTitleLogin: "Sign In to ESN Guide", authTitleRegister: "Create Student Account", emailPlh: "your.email@domain.com", passwordPlh: "••••••••", usernamePlh: "ErasmusNick", btnAuthSubmitLogin: "Sign In", btnAuthSubmitRegister: "Create Account", switchRegister: "Don't have an account? Sign up", switchLogin: "Already have an account? Sign in", editProfile: "Edit Profile", saveProfile: "Save Changes", helpTitle: "Help & Student Guide", helpSubtitle: "Have a question or ran into an issue? Send us a message and we'll get back to you by email.", helpNameLabel: "Your Name", helpEmailLabel: "Your Email", helpMessageLabel: "Your Request", helpMessagePlh: "Describe your question or issue...", helpSubmitBtn: "Send Request", helpSuccess: "Thanks! Your request has been sent. We'll reply to your email as soon as possible.", helpErrorRequired: "Please fill in your email and your request before sending.", excursionsTitle: "Excursions", excursionsBadge: "Coming Soon", excursionsText: "We're building a way for Erasmus students to organize and join group excursions across Slovakia. Stay tuned!", backHome: "Back to Home" },
+  fr: { title: "Explore la Slovaquie", subtitle: "Trouve les meilleurs hôtels, randos et réductions choisis par l'ESN.", searchPlaceholder: "Où vas-tu ? (Bratislava, Kosice, Poprad...)", filterTitle: "Explorer les Régions", allRegions: "Toute la Slovaquie", popularTitle: "Coins recommandés", views: "vues", isicBadge: "✨ Réduction ISIC Active", btnSeeOn: "Vérifier la disponibilité", mapShow: "Ouvrir la Carte", profile: "Profil", login: "Connexion", logout: "Déconnexion", menuHelp: "Aide & Guide Étudiant", menuAbout: "À propos d'ESN Slovaquie", menuExcursions: "Excursions", detailsTitle: "Voir les Détails", close: "Fermer", mobileMapBtn: "Carte", noReviews: "Aucun avis pour le moment", addReview: "Laisser un avis", loginRequired: "Vous devez être connecté pour laisser un avis.", authTitleLogin: "Connexion à ESN Guide", authTitleRegister: "Créer un compte Étudiant", emailPlh: "votre.email@domaine.com", passwordPlh: "••••••••", usernamePlh: "PseudoErasmus", btnAuthSubmitLogin: "Se connecter", btnAuthSubmitRegister: "Créer le compte", switchRegister: "Pas encore de compte ? S'inscrire", switchLogin: "Déjà un compte ? Se connecter", editProfile: "Modifier le Profil", saveProfile: "Enregistrer", helpTitle: "Aide & Guide Étudiant", helpSubtitle: "Une question ou un souci ? Envoyez-nous un message, nous vous répondrons par email.", helpNameLabel: "Votre nom", helpEmailLabel: "Votre email", helpMessageLabel: "Votre demande", helpMessagePlh: "Décrivez votre question ou votre problème...", helpSubmitBtn: "Envoyer la demande", helpSuccess: "Merci ! Votre demande a été envoyée. Nous répondrons à votre email dès que possible.", helpErrorRequired: "Veuillez renseigner votre email et votre demande avant d'envoyer.", excursionsTitle: "Excursions", excursionsBadge: "Bientôt disponible", excursionsText: "Nous développons un outil pour permettre aux étudiants Erasmus d'organiser et de rejoindre des excursions de groupe en Slovaquie. Restez connectés !", backHome: "Retour à l'accueil" }
 };
 
 const IMAGE_BANK = {
@@ -78,11 +79,28 @@ export default function App() {
 
   const [ratings, setRatings] = useState({});
   const [hoverRating, setHoverRating] = useState(0);
+  const [placeReviews, setPlaceReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewComment, setReviewComment] = useState('');
+  const [pendingStars, setPendingStars] = useState(0);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSubmitError, setReviewSubmitError] = useState('');
+
+  // --- PAGE NAVIGATION (Home / About / Help / Excursions) ---
+  const [currentPage, setCurrentPage] = useState('home');
+  const [isMobileMapOpen, setIsMobileMapOpen] = useState(false);
+
+  // --- HELP FORM STATES ---
+  const [helpName, setHelpName] = useState('');
+  const [helpEmail, setHelpEmail] = useState('');
+  const [helpMessage, setHelpMessage] = useState('');
+  const [helpSubmitted, setHelpSubmitted] = useState(false);
+  const [helpError, setHelpError] = useState('');
 
   const t = translations[lang];
 
   useEffect(() => {
-    let url = 'http://localhost:8000/api/places';
+    let url = `${API_URL}/api/places`;
     if (selectedDistrict) url += `?district=${selectedDistrict}`;
     fetch(url)
       .then(r => r.json())
@@ -134,7 +152,7 @@ export default function App() {
       : { email: authEmail, password: authPassword, username: authUsername };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/auth/${endpoint}`, {
+      const response = await fetch(`${API_URL}/api/auth/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bodyData)
@@ -178,7 +196,7 @@ export default function App() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/users/me', {
+      const response = await fetch(`${API_URL}/api/users/me`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -206,22 +224,46 @@ export default function App() {
     }
   };
 
-  const submitRating = async (placeId, score) => {
-    if (!token) return;
+  const submitRating = async (placeId) => {
+    if (!token || pendingStars === 0 || submittingReview) return;
+    setSubmittingReview(true);
+    setReviewSubmitError('');
     try {
-      const response = await fetch('http://localhost:8000/api/reviews', {
+      const response = await fetch(`${API_URL}/api/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ place_id: placeId, rating: score, comment: "" })
+        body: JSON.stringify({ place_id: placeId, rating: pendingStars, comment: reviewComment })
       });
-      if (response.ok) {
-        setRatings(prev => ({ ...prev, [placeId]: score }));
-      }
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Submit failed');
+
+      setRatings(prev => ({ ...prev, [placeId]: pendingStars }));
+      setReviewComment('');
+      // Refresh the review list so the new/updated comment shows immediately
+      await fetchPlaceReviews(placeId);
     } catch (err) {
       console.error("Error submitting rating", err);
+      setReviewSubmitError(lang === 'fr' ? "Échec de l'enregistrement. Réessayez." : "Failed to save. Please try again.");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  // Récupère les avis existants pour un lieu (appelé à l'ouverture de la modale de détail)
+  const fetchPlaceReviews = async (placeId) => {
+    setReviewsLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/reviews/place/${placeId}`);
+      const data = await response.json();
+      setPlaceReviews(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching reviews", err);
+      setPlaceReviews([]);
+    } finally {
+      setReviewsLoading(false);
     }
   };
 
@@ -250,6 +292,25 @@ export default function App() {
     ];
   };
 
+  // Soumission du formulaire d'aide. NOTE: il n'y a pas encore d'endpoint backend
+  // dédié pour envoyer un email — pour l'instant la demande est juste validée côté
+  // front. Pour rendre ça fonctionnel, créez une route POST /api/help côté backend
+  // (ex: avec nodemailer) et remplacez le setTimeout ci-dessous par un vrai fetch.
+  const handleHelpSubmit = (e) => {
+    e.preventDefault();
+    setHelpError('');
+    if (!helpEmail || !helpMessage) {
+      setHelpError(t.helpErrorRequired);
+      return;
+    }
+    // TODO: remplacer par un vrai appel API une fois l'endpoint backend créé, ex:
+    // await fetch(`${API_URL}/api/help`, { method: 'POST', headers: {...}, body: JSON.stringify({ name: helpName, email: helpEmail, message: helpMessage }) });
+    setHelpSubmitted(true);
+    setHelpName('');
+    setHelpEmail('');
+    setHelpMessage('');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50/50 text-gray-900 flex flex-col font-sans relative antialiased">
       
@@ -262,15 +323,16 @@ export default function App() {
             </button>
             {isNavMenuOpen && (
               <div className="absolute left-0 mt-2 w-64 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 z-50">
-                <button className="w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">{t.menuHelp}</button>
-                <button className="w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">{t.menuAbout}</button>
+                <button onClick={() => { setCurrentPage('help'); setIsNavMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">{t.menuHelp}</button>
+                <button onClick={() => { setCurrentPage('about'); setIsNavMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">{t.menuAbout}</button>
+                <button onClick={() => { setCurrentPage('excursions'); setIsNavMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">{t.menuExcursions}</button>
               </div>
             )}
           </div>
         </div>
 
         <div className="flex items-center gap-6 shrink-0">
-          <span className="text-2xl font-extrabold tracking-tight cursor-pointer whitespace-nowrap bg-gradient-to-r from-cyan-600 via-blue-600 to-pink-500 bg-clip-text text-transparent" onClick={() => { setSelectedDistrict(''); setSearchQuery(''); }}>
+          <span className="text-2xl font-extrabold tracking-tight cursor-pointer whitespace-nowrap bg-gradient-to-r from-cyan-600 via-blue-600 to-pink-500 bg-clip-text text-transparent" onClick={() => { setSelectedDistrict(''); setSearchQuery(''); setCurrentPage('home'); }}>
             ESN<span className="font-semibold text-pink-500">Guide</span>
           </span>
           <div className="flex gap-1 bg-gray-100/80 p-1 rounded-xl text-xs font-bold border border-gray-200/50">
@@ -305,7 +367,8 @@ export default function App() {
         </div>
       </header>
 
-      {/* HERO BANNER */}
+      {/* HERO BANNER (Home only) */}
+      {currentPage === 'home' && (
       <section className="bg-gradient-to-br from-orange-950 via-red-950 to-gray-950 text-white py-20 px-4 text-center relative overflow-hidden shadow-lg">
         <div className="max-w-3xl mx-auto relative z-10">
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-4 tracking-tight leading-none bg-gradient-to-r from-white via-orange-100 to-amber-200 bg-clip-text text-transparent">{t.title}</h2>
@@ -316,8 +379,79 @@ export default function App() {
           </div>
         </div>
       </section>
+      )}
 
-      {/* MAIN CONTAINER */}
+      {/* ABOUT PAGE */}
+      {currentPage === 'about' && (
+        <main className="max-w-3xl w-full mx-auto p-4 sm:p-6 md:p-8 flex-1">
+          <button onClick={() => setCurrentPage('home')} className="text-xs font-bold text-cyan-600 hover:underline mb-6 inline-block">← {t.backHome}</button>
+          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight mb-6">Who We Are</h2>
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8 space-y-4 text-sm sm:text-base text-gray-600 leading-relaxed">
+            <p>
+              ESN Guide is a student-built platform created to accompany international and Erasmus students throughout their exchange in Slovakia. Moving to a new country for a semester or a year comes with a lot of uncertainty — where to live, where to eat on a student budget, which trails are worth hiking, and which places actually offer a discount with your ISIC card.
+            </p>
+            <p>
+              Our goal is simple: bring all of that necessary information together in one place, curated by and for Erasmus students, so you can spend less time searching and more time actually experiencing Slovakia.
+            </p>
+            <p>
+              ESN Guide is developed as part of a web programming project by a small student team, in collaboration with the spirit of the Erasmus Student Network (ESN). We're constantly adding new places, features, and tools — including reviews from real students and, soon, group excursions.
+            </p>
+            <p>
+              Have feedback or an idea to improve the platform? Reach out through our Help page — we'd love to hear from you.
+            </p>
+          </div>
+        </main>
+      )}
+
+      {/* HELP PAGE */}
+      {currentPage === 'help' && (
+        <main className="max-w-2xl w-full mx-auto p-4 sm:p-6 md:p-8 flex-1">
+          <button onClick={() => setCurrentPage('home')} className="text-xs font-bold text-cyan-600 hover:underline mb-6 inline-block">← {t.backHome}</button>
+          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight mb-2">{t.helpTitle}</h2>
+          <p className="text-sm text-gray-500 mb-8">{t.helpSubtitle}</p>
+
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8">
+            {helpSubmitted ? (
+              <p className="text-sm font-semibold text-emerald-600">{t.helpSuccess}</p>
+            ) : (
+              <form onSubmit={handleHelpSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{t.helpNameLabel}</label>
+                  <input type="text" value={helpName} onChange={(e) => setHelpName(e.target.value)} className="w-full bg-gray-50 border border-gray-100 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-cyan-500 focus:bg-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{t.helpEmailLabel}</label>
+                  <input type="email" required value={helpEmail} onChange={(e) => setHelpEmail(e.target.value)} placeholder={t.emailPlh} className="w-full bg-gray-50 border border-gray-100 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-cyan-500 focus:bg-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{t.helpMessageLabel}</label>
+                  <textarea required rows={5} value={helpMessage} onChange={(e) => setHelpMessage(e.target.value)} placeholder={t.helpMessagePlh} className="w-full bg-gray-50 border border-gray-100 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-cyan-500 focus:bg-white resize-none" />
+                </div>
+                {helpError && <p className="text-xs font-semibold text-red-500">{helpError}</p>}
+                <button type="submit" className="w-full py-3.5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold rounded-xl text-sm shadow-md shadow-blue-600/10 transition-all">
+                  {t.helpSubmitBtn}
+                </button>
+              </form>
+            )}
+          </div>
+        </main>
+      )}
+
+      {/* EXCURSIONS PAGE (Experimental) */}
+      {currentPage === 'excursions' && (
+        <main className="max-w-3xl w-full mx-auto p-4 sm:p-6 md:p-8 flex-1 flex items-center justify-center">
+          <div className="text-center py-16">
+            <button onClick={() => setCurrentPage('home')} className="text-xs font-bold text-cyan-600 hover:underline mb-8 inline-block">← {t.backHome}</button>
+            <div className="text-5xl mb-4">🚧</div>
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight mb-3">{t.excursionsTitle}</h2>
+            <span className="inline-block bg-amber-100 text-amber-700 text-xs font-black uppercase tracking-wider px-4 py-1.5 rounded-full mb-5">{t.excursionsBadge}</span>
+            <p className="text-sm sm:text-base text-gray-500 max-w-md mx-auto leading-relaxed">{t.excursionsText}</p>
+          </div>
+        </main>
+      )}
+
+      {/* MAIN CONTAINER (Home only) */}
+      {currentPage === 'home' && (
       <main className="max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8 flex-1">
         <h3 className="text-sm font-black uppercase tracking-widest mb-3 text-gray-400">{t.filterTitle}</h3>
         <div className="flex gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar -mx-4 px-4">
@@ -336,7 +470,7 @@ export default function App() {
             const currentRating = ratings[place.id];
 
             return (
-              <div key={place.id} onClick={() => setSelectedPlace({ ...place, resolvedImages: imageList })} className="bg-white rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden cursor-pointer transition-all duration-300 flex flex-col justify-between group relative transform hover:-translate-y-1">
+              <div key={place.id} onClick={() => { setSelectedPlace({ ...place, resolvedImages: imageList }); setReviewComment(''); setPendingStars(0); setReviewSubmitError(''); fetchPlaceReviews(place.id); }} className="bg-white rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden cursor-pointer transition-all duration-300 flex flex-col justify-between group relative transform hover:-translate-y-1">
                 <div className="relative h-48 bg-gray-100 overflow-hidden">
                   <img src={imageList[activeImgIndex]} alt={place.name} className="w-full h-full object-cover" />
                   <button onClick={(e) => handlePrevImage(place.id, imageList, e)} className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-gray-800 shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20">
@@ -379,6 +513,7 @@ export default function App() {
           })}
         </div>
       </main>
+      )}
 
       {/* DETAILS MODAL */}
       {selectedPlace && (
@@ -395,16 +530,63 @@ export default function App() {
               <div className="mb-6 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                 <h4 className="text-xs font-black uppercase tracking-wider text-gray-400 mb-2">{t.addReview}</h4>
                 {user ? (
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button key={star} onClick={() => submitRating(selectedPlace.id, star)} onMouseEnter={() => setHoverRating(star)} onMouseLeave={() => setHoverRating(0)}>
-                        <Star size={24} className={`transition-colors ${star <= (hoverRating || ratings[selectedPlace.id] || 0) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
-                      </button>
-                    ))}
-                  </div>
+                  <>
+                    <div className="flex gap-1 mb-3">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button key={star} type="button" onClick={() => setPendingStars(star)} onMouseEnter={() => setHoverRating(star)} onMouseLeave={() => setHoverRating(0)}>
+                          <Star size={24} className={`transition-colors ${star <= (hoverRating || pendingStars || ratings[selectedPlace.id] || 0) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
+                        </button>
+                      ))}
+                    </div>
+                    <textarea
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      placeholder={lang === 'fr' ? 'Partagez votre expérience...' : 'Share your experience...'}
+                      rows={2}
+                      className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-cyan-500 resize-none mb-3"
+                    />
+                    {reviewSubmitError && <p className="text-xs font-semibold text-red-500 mb-2">{reviewSubmitError}</p>}
+                    <button
+                      type="button"
+                      onClick={() => submitRating(selectedPlace.id)}
+                      disabled={pendingStars === 0 || submittingReview}
+                      className="w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold rounded-xl text-sm shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      {submittingReview
+                        ? (lang === 'fr' ? 'Envoi...' : 'Submitting...')
+                        : (lang === 'fr' ? 'Confirmer mon avis' : 'Confirm my review')}
+                    </button>
+                  </>
                 ) : (
                   <div onClick={() => { setIsAuthModalOpen(true); setSelectedPlace(null); }} className="flex items-center gap-2 text-red-500 cursor-pointer hover:underline text-xs font-medium">
                     <Lock size={14} /> {t.loginRequired}
+                  </div>
+                )}
+              </div>
+
+              <div className="mb-6">
+                <h4 className="text-xs font-black uppercase tracking-wider text-gray-400 mb-3">
+                  {lang === 'fr' ? 'Avis des étudiants' : 'Student Reviews'} {placeReviews.length > 0 && `(${placeReviews.length})`}
+                </h4>
+                {reviewsLoading ? (
+                  <p className="text-xs text-gray-400 italic">{lang === 'fr' ? 'Chargement...' : 'Loading...'}</p>
+                ) : placeReviews.length === 0 ? (
+                  <p className="text-xs text-gray-400 italic">{t.noReviews}</p>
+                ) : (
+                  <div className="space-y-3 max-h-56 overflow-y-auto pr-1">
+                    {placeReviews.map((review) => (
+                      <div key={review.id} className="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-bold text-gray-800">{review.username}</span>
+                          <div className="flex gap-0.5">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star key={s} size={12} className={s <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'} />
+                            ))}
+                          </div>
+                        </div>
+                        {review.comment && <p className="text-xs text-gray-600">{review.comment}</p>}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -513,7 +695,8 @@ export default function App() {
         </div>
       )}
 
-      {/* LIVE MAP */}
+      {/* LIVE MAP (Desktop / Tablet) — Home only */}
+      {currentPage === 'home' && (
       <div className={`hidden md:flex fixed bottom-6 right-6 z-40 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 ease-out flex-col ${isMapExpanded ? 'w-[550px] h-[450px]' : 'w-72 h-44'}`}>
         <div className="bg-gray-900 text-white px-4 py-3 flex justify-between items-center font-bold text-xs">
           <span className="flex items-center gap-1.5 font-extrabold tracking-wide"><MapIcon size={14} className="text-cyan-400" /> LIVE MAP ({places.length})</span>
@@ -532,7 +715,7 @@ export default function App() {
                   <Popup>
                     <div className="w-48 font-sans p-1">
                       <h3 className="font-bold text-sm text-gray-900 leading-tight">{place.name}</h3>
-                      <button onClick={() => setSelectedPlace(place)} className="block w-full text-center bg-cyan-600 text-white text-[11px] font-bold py-1.5 px-2 rounded-xl mt-2.5 shadow-sm">{t.detailsTitle}</button>
+                        <button onClick={() => { setSelectedPlace(place); setReviewComment(''); setPendingStars(0); setReviewSubmitError(''); fetchPlaceReviews(place.id); }} className="block w-full text-center bg-cyan-600 text-white text-[11px] font-bold py-1.5 px-2 rounded-xl mt-2.5 shadow-sm">{t.detailsTitle}</button>
                     </div>
                   </Popup>
                 </Marker>
@@ -541,6 +724,48 @@ export default function App() {
           </MapContainer>
         </div>
       </div>
+      )}
+
+      {/* MOBILE MAP BUTTON (Phone) — Home only, opens fullscreen map modal */}
+      {currentPage === 'home' && (
+        <button
+          onClick={() => setIsMobileMapOpen(true)}
+          className="md:hidden fixed bottom-5 right-5 z-40 bg-gray-900 text-white rounded-full shadow-2xl px-5 py-3.5 flex items-center gap-2 text-xs font-extrabold tracking-wide active:scale-95 transition-transform"
+        >
+          <MapIcon size={16} className="text-cyan-400" /> {t.mobileMapBtn}
+        </button>
+      )}
+
+      {/* MOBILE FULLSCREEN MAP MODAL */}
+      {isMobileMapOpen && (
+        <div className="md:hidden fixed inset-0 z-[60] bg-white flex flex-col">
+          <div className="bg-gray-900 text-white px-4 py-3.5 flex justify-between items-center font-bold text-xs shrink-0">
+            <span className="flex items-center gap-1.5 font-extrabold tracking-wide"><MapIcon size={14} className="text-cyan-400" /> {t.mobileMapBtn} ({places.length})</span>
+            <button onClick={() => setIsMobileMapOpen(false)} className="p-1.5 hover:bg-gray-800 text-gray-300 rounded-lg">
+              <X size={18} />
+            </button>
+          </div>
+          <div className="flex-1 relative">
+            <MapContainer center={SLOVAKIA_CENTER} zoom={6} style={{ width: '100%', height: '100%' }}>
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              {places.map(place => {
+                const lat = parseFloat(place.latitude); const lng = parseFloat(place.longitude);
+                if (isNaN(lat) || isNaN(lng)) return null;
+                return (
+                  <Marker key={place.id} position={[lat, lng]} icon={icons[place.category.toLowerCase()] || icons.default}>
+                    <Popup>
+                      <div className="w-48 font-sans p-1">
+                        <h3 className="font-bold text-sm text-gray-900 leading-tight">{place.name}</h3>
+                        <button onClick={() => { setIsMobileMapOpen(false); setSelectedPlace(place); setReviewComment(''); setPendingStars(0); setReviewSubmitError(''); fetchPlaceReviews(place.id); }} className="block w-full text-center bg-cyan-600 text-white text-[11px] font-bold py-1.5 px-2 rounded-xl mt-2.5 shadow-sm">{t.detailsTitle}</button>
+                      </div>
+                    </Popup>
+                  </Marker>
+                );
+              })}
+            </MapContainer>
+          </div>
+        </div>
+      )}
 
     </div>
   );
