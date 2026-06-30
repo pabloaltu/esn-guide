@@ -41,6 +41,25 @@ exports.createOrUpdateReview = async (req, res) => {
         res.status(200).json({ message: "Avis enregistré avec succès !", review: result.rows[0] });
     } catch (err) {
         console.error("Erreur createOrUpdateReview:", err);
+
+        // Code Postgres 23503 = violation de clé étrangère.
+        // Cas typique : le token JWT du navigateur pointe vers un user_id qui
+        // n'existe plus en base (ex: base réinitialisée alors que le token,
+        // lui, est resté valide pendant 24h). On distingue ce cas pour que le
+        // frontend puisse déconnecter l'utilisateur et lui demander de se
+        // reconnecter, plutôt que de juste afficher une erreur générique.
+        if (err.code === "23503") {
+            if (err.constraint === "reviews_user_id_fkey") {
+                return res.status(401).json({
+                    error: "Votre session n'est plus valide. Veuillez vous reconnecter.",
+                    code: "STALE_SESSION"
+                });
+            }
+            if (err.constraint === "reviews_place_id_fkey") {
+                return res.status(404).json({ error: "Ce lieu n'existe plus." });
+            }
+        }
+
         res.status(500).json({ error: "Erreur serveur lors de l'enregistrement de l'avis" });
     }
 };
